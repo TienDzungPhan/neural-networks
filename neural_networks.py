@@ -135,9 +135,9 @@ class relu:
         ################################################################################
         # TODO: Implement the relu forward pass. Store the result in forward_output    #
         ################################################################################
-        
+        self.mask = np.array([[1 if x[i] > 0 else 0 for i in range(len(x))] for x in X])
 
-        return forward_output
+        return np.array([[max([0, x[i]]) for i in range(len(x))] for x in X])
 
     def backward(self, X, grad):
 
@@ -159,7 +159,7 @@ class relu:
         ####################################################################################################
 
 
-        return backward_output
+        return np.multiply(grad, self.mask)
 
 
 # 3. tanh Activation
@@ -180,7 +180,7 @@ class tanh:
         # You can use np.tanh()
         ################################################################################
 
-        return forward_output
+        return np.tanh(X)
 
     def backward(self, X, grad):
 
@@ -199,7 +199,7 @@ class tanh:
         ####################################################################################################
 
 
-        return backward_output
+        return np.multiply(grad, 1 - np.tanh(X)**2)
 
 
 # 4. Dropout
