@@ -258,9 +258,9 @@ class dropout:
         # TODO: Implement the backward pass
         # You can use the mask created in the forward step
         ####################################################################################################
+        
 
-
-        return backward_output
+        return np.multiply(grad, self.mask)
 
 
 
