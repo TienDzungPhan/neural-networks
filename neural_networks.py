@@ -99,7 +99,7 @@ class linear_layer:
         #################################################################################################
         N = len(X)
 
-        self.gradient["W"] = grad @ np.transpose(self.params["W"])
+        self.gradient["W"] = np.transpose(X) @ grad
         self.gradient["b"] = np.ones((1, N)) @ grad
         
         return grad @ np.transpose(self.params["W"])
@@ -280,8 +280,7 @@ def miniBatchGradientDescent(model, momentum, _alpha, _learning_rate):
                     # TODO: update the model parameter module.params[key] by a step of gradient descent.
                     # Note again that the gradient is stored in g already.
                     ####################################################################################
-                    v = -_learning_rate * g
-                    module.gradient[key] += v
+                    module.params[key] += -_learning_rate * g
 
 
                 else:
@@ -289,8 +288,11 @@ def miniBatchGradientDescent(model, momentum, _alpha, _learning_rate):
                     # TODO: Update the model parameter module.params[key] by a step of gradient descent with momentum.
                     # Access the previous momentum by momentum[module_name + '_' + key], and then update it directly.
                     ###################################################################################################
-                    momentum[module_name + '_' + key] = _alpha * momentum[module_name + '_' + key] - _learning_rate * g
-                    module.gradient[key] += momentum[module_name + '_' + key]
+                    if (module_name + '_' + key) not in momentum.keys():
+                        momentum[module_name + '_' + key] = -_learning_rate * g
+                    else:
+                        momentum[module_name + '_' + key] = _alpha * momentum[module_name + '_' + key] - _learning_rate * g
+                    module.params[key] += momentum[module_name + '_' + key]
 
     return model
 
@@ -394,6 +396,9 @@ def main(main_params):
             # TODO: Call the backward methods of every layer in the model in reverse order.
             # We have given the first and last backward calls (above and below this TODO block).
             ######################################################################################
+            grad_d1 = model['L2'].backward(d1, grad_a2)
+            grad_h1 = model['drop1'].backward(h1, grad_d1)
+            grad_a1 = model['nonlinear1'].backward(a1, grad_h1)
             grad_x = model['L1'].backward(x, grad_a1)
 
             ### gradient_update ###
